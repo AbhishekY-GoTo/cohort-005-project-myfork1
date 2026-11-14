@@ -1257,9 +1257,6 @@ function FullLesson({
             />
           )}
 
-          {/* Note — under the video, so the Student can write while they watch */}
-          {currentUserId && <LessonNote note={note} />}
-
           {/* Lesson Content */}
           {contentHtml && (
             <div
@@ -1334,14 +1331,24 @@ function FullLesson({
             </div>
           )}
 
-          {/* Questions & Discussion — confidential to people with access */}
-          <CommentThread
-            comments={comments}
-            currentUserId={currentUserId}
-            canModerate={canModerate}
-            canPost
-            instructorName={instructorName}
-          />
+          <div
+            className={
+              currentUserId
+                ? "mb-8 grid items-start gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
+                : "mb-8"
+            }
+          >
+            {currentUserId && <LessonNote note={note} />}
+
+            {/* Questions & Discussion — confidential to people with access */}
+            <CommentThread
+              comments={comments}
+              currentUserId={currentUserId}
+              canModerate={canModerate}
+              canPost
+              instructorName={instructorName}
+            />
+          </div>
 
           {/* Prev/Next Navigation */}
           <div className="flex items-center justify-between border-t pt-6">
@@ -1425,21 +1432,27 @@ function LessonNote({
   const error = fetcher.data?.error;
 
   return (
-    <Card className="mb-8">
-      <CardContent className="space-y-3 pt-6">
-        <div className="flex items-center gap-2">
-          <NotebookPen className="size-4 text-muted-foreground" />
-          <h2 className="font-semibold">Your notes</h2>
+    <Card className="h-fit shadow-none">
+      <CardContent className="space-y-4 p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <NotebookPen className="size-5 text-primary" />
+            <h2 className="font-semibold">Your notes</h2>
+          </div>
+          <span className="rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
+            Private
+          </span>
         </div>
 
         <fetcher.Form method="post" className="space-y-3">
           <input type="hidden" name="intent" value="save-note" />
           <Textarea
             name="body"
-            rows={6}
+            rows={4}
             defaultValue={note?.body ?? ""}
-            placeholder="Only you can read this."
-            className="resize-y"
+            placeholder="Capture a thought or takeaway..."
+            aria-label="Your private lesson notes"
+            className="resize-y bg-background"
           />
           <div className="flex items-center gap-3">
             <Button type="submit" size="sm" disabled={isSaving}>
